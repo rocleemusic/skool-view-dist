@@ -6,7 +6,7 @@ own logged-in Skool session** — there's no central server and no shared creden
 ## Install
 
 1. Open **Firefox** (desktop).
-2. Click the latest signed install link: **[skool-view releases](https://github.com/rocleemusic/skool-view/releases/latest)** → download the `.xpi`.
+2. Click the latest signed install link: **[skool-view releases](https://github.com/rocleemusic/skool-view-dist/releases/latest)** → download the `.xpi`.
 3. Firefox asks to **Add skool-view** → **Add**. (The add-on is Mozilla-signed, so it installs permanently.)
 4. You'll see the **`cn`** button appear in the toolbar.
 

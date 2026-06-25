@@ -1,7 +1,7 @@
 // Composer-side mention serialization. The MentionBox shows a mention as plain visible text
 // (`@First Last`) while tracking the picked user's id; on send we convert each tracked mention to
 // Skool's wire format `[@First Last](obj://user/{id})` (the same format markup.toHtml renders and
-// the reverse-engineering notes describe). Pure: no DOM, no network — unit-tested in the source repo.
+// the reverse-engineering notes documents). Pure: no DOM, no network — unit-tested in the source repo.
 
 /**
  * @typedef {object} TrackedMention
