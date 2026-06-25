@@ -1,0 +1,1029 @@
+/* Overlay styles for skool-view, injected into the shadow root by the content script (a
+   head-injected <style> can't cross the shadow boundary). Ported from the prototype styles.
+   Two adaptations for the shadow DOM:
+     1. Design tokens live on `.sv-root` (not `:root`/<html>) so they resolve inside the shadow.
+     2. Themes are `.sv-root[data-theme="…"]` (App stamps `data-theme` on .sv-root, not <html>).
+   Class names are plain (no Svelte scoping) so they match the markup inside the shadow root. */
+
+/* ---- design tokens (default / dark) ---- */
+.sv-root {
+  color-scheme: dark;
+  --bg: #0e1116;
+  --panel: #161b22;
+  --panel-2: #1c2230;
+  --line: #2a3140;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --accent-hover: color-mix(in oklab, var(--accent), black 12%);
+  --accent-2: #f78166;
+  --good: #3fb950;
+  --radius: 12px;
+  --topbar-h: 56px;
+  --font: -apple-system, "Segoe UI", system-ui, sans-serif;
+  --listbg: #0c0f14;
+  --rowdiv: #1a1f29;
+  --bodytext: #c9d1d9;
+  --btn-fg: #07101f;
+}
+
+/* ---- Discord theme ---- */
+.sv-root[data-theme="discord"] {
+  --bg: #313338;
+  --listbg: #2b2d31;
+  --panel: #1e1f22;
+  --panel-2: color-mix(in oklab, #4e5058 55%, #2b2d31);
+  --line: #3f4147;
+  --rowdiv: rgba(255, 255, 255, 0.04);
+  --text: #dbdee1;
+  --bodytext: #dbdee1;
+  --muted: #949ba4;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+  --accent-2: #5865f2;
+  --good: #23a55a;
+  --btn-fg: #ffffff;
+  --radius: 8px;
+  --font: "gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* ---- MiniMax theme (light) ---- */
+.sv-root[data-theme="minimax"] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --listbg: #fafafa;
+  --panel: #f0f2f5;
+  --panel-2: #e7eaef;
+  --line: #e5e7eb;
+  --rowdiv: #eceef1;
+  --text: #222222;
+  --bodytext: #353a42;
+  --muted: #45515e;
+  --accent: #1456f0;
+  --accent-hover: #2563eb;
+  --accent-2: #1456f0;
+  --brand-pink: #ea5ec1;
+  --good: #16a34a;
+  --btn-fg: #ffffff;
+  --radius: 13px;
+  --font: "DM Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* ---- root container (replaces the prototype's body) ---- */
+.sv-root {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 var(--font);
+  overflow: hidden;
+}
+.sv-root *,
+.sv-root *::before,
+.sv-root *::after {
+  box-sizing: border-box;
+}
+.sv-root button {
+  font: inherit;
+  cursor: pointer;
+}
+.sv-root img {
+  display: block;
+}
+.sv-root [hidden] {
+  display: none !important;
+}
+
+/* ---- focus visibility (keyboard a11y) ---- */
+.sv-root :where(a, button, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.sv-root .row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.sv-root .sortsel:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent), transparent 70%);
+}
+
+/* ---- empty / loading / error states ---- */
+.sv-root .empty {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 28px 16px;
+  line-height: 1.6;
+}
+.sv-boot {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sv-boot code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-root *,
+  .sv-root *::before,
+  .sv-root *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ---- top bar ---- */
+.sv-root .topbar {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 20px 0 16px;
+  background: var(--listbg);
+  border-bottom: 1px solid var(--line);
+}
+.sv-root .topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sv-root .brand {
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sv-root .brand-mark {
+  color: var(--brand-pink, currentColor);
+}
+.sv-root .tabs {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.sv-root .tabs button {
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.sv-root .tabs button:hover {
+  color: var(--text);
+  background: var(--panel);
+}
+.sv-root .tabs button.active {
+  color: var(--text);
+  background: var(--panel-2);
+}
+.sv-root .themesel {
+  margin-left: 4px;
+}
+
+/* ---- topbar icon actions (exit ghost button) ---- */
+.sv-root .iconbtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+}
+.sv-root .iconbtn:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--panel);
+}
+.sv-root .iconbtn .ic {
+  width: 19px;
+  height: 19px;
+}
+.sv-root .exitbtn {
+  width: 24px;
+  height: 24px;
+}
+
+/* ---- topbar right cluster: refresh / notifications / chat (step 6) ---- */
+.sv-root .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.sv-root .notif-wrap {
+  position: relative;
+}
+.sv-root .notif-badge {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--accent-2);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 15px;
+  text-align: center;
+}
+.sv-root .notif-panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  max-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+.sv-root .notif-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--line);
+}
+.sv-root .notif-list {
+  overflow-y: auto;
+}
+.sv-root .notif-empty {
+  padding: 28px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.sv-root .notif-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rowdiv);
+  color: var(--text);
+  text-decoration: none;
+}
+.sv-root .notif-item:hover {
+  background: var(--panel);
+}
+.sv-root .notif-item.unread {
+  background: color-mix(in oklab, var(--accent), transparent 88%);
+}
+.sv-root .notif-body {
+  min-width: 0;
+}
+.sv-root .notif-text {
+  font-size: 13px;
+  color: var(--bodytext);
+}
+.sv-root .notif-preview {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.sv-root .notif-time {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.sv-root .notif-close {
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  line-height: 1;
+}
+.sv-root .notif-more {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 8px 12px 12px;
+}
+
+/* ---- two-pane layout ---- */
+.sv-root .layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.sv-root .listpane {
+  width: 400px;
+  flex: none;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--listbg);
+}
+.sv-root .listhead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--listbg);
+  border-bottom: 1px solid var(--line);
+}
+.sv-root .lh-controls {
+  display: flex;
+  gap: 8px;
+}
+.sv-root .lh-controls select {
+  flex: 1;
+  min-width: 0;
+}
+.sv-root .sortsel {
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 13px;
+}
+.sv-root .sub {
+  color: var(--muted);
+  font-size: 13px;
+  min-height: 1em;
+}
+
+/* ---- list rows ---- */
+.sv-root .list {
+  display: flex;
+  flex-direction: column;
+}
+.sv-root .listdiv {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 16px 6px;
+  background: var(--listbg);
+}
+.sv-root .row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rowdiv);
+  cursor: pointer;
+}
+.sv-root .row:hover {
+  background: var(--panel);
+}
+.sv-root .row.selected {
+  background: var(--panel-2);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.sv-root .pinbtn {
+  font-size: 14px;
+  line-height: 1;
+  width: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: grayscale(1) opacity(0.35);
+  flex: none;
+  /* Reset native button chrome so the glyph reads as an inline control. */
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.sv-root .row:hover .pinbtn {
+  filter: grayscale(1) opacity(0.6);
+}
+.sv-root .pinbtn:hover:not(:disabled) {
+  filter: none;
+}
+.sv-root .pinbtn.on {
+  filter: none;
+}
+.sv-root .pinbtn:disabled {
+  cursor: default;
+}
+.sv-root .rmain {
+  min-width: 0;
+}
+.sv-root .rtitle {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sv-root .rmeta {
+  color: var(--muted);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.sv-root .rname {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.sv-root .rstat {
+  flex: none;
+  white-space: nowrap;
+}
+.sv-root .rcat {
+  margin: 2px 0 6px;
+  max-width: 100%;
+}
+.sv-root .catchip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--muted);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+/* ---- avatars ---- */
+.sv-root .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--panel-2);
+}
+.sv-root .avatar.sm {
+  width: 26px;
+  height: 26px;
+}
+.sv-root .avatar.xs {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* ---- infinite-scroll sentinel ---- */
+.sv-root .sentinel {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 14px;
+  visibility: hidden;
+}
+.sv-root .sentinel.show {
+  visibility: visible;
+}
+
+/* ---- detail pane (§6 step 4a — selected post; comments shell) ---- */
+.sv-root .detail {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 32px 80px;
+}
+.sv-root .placeholder {
+  color: var(--muted);
+  margin-top: 12vh;
+  text-align: center;
+  font-size: 15px;
+}
+.sv-root .dwrap {
+  max-width: 680px;
+  margin: 0 auto;
+}
+.sv-root .pmeta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.sv-root .who {
+  font-weight: 600;
+  font-size: 14px;
+}
+.sv-root .when {
+  color: var(--muted);
+  font-size: 12px;
+}
+.sv-root .detail h1 {
+  font-size: 22px;
+  margin: 6px 0 10px;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+}
+.sv-root .dcat {
+  margin: 0 0 16px;
+}
+.sv-root .dbody {
+  color: var(--bodytext);
+  white-space: pre-wrap;
+  margin: 0 0 16px;
+  word-break: break-word;
+}
+.sv-root .dbody a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.sv-root .dbody a:hover {
+  text-decoration: underline;
+}
+
+/* ---- attachments (thumbnails + lightbox; posts + comments) ---- */
+.sv-root .attach {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+.sv-root .cbody .attach {
+  margin: 6px 0 2px;
+}
+.sv-root .attach-thumb {
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  cursor: zoom-in;
+  overflow: hidden;
+  line-height: 0;
+}
+.sv-root .attach-thumb img {
+  display: block;
+  height: 160px;
+  width: auto;
+  max-width: 320px;
+  object-fit: cover;
+}
+.sv-root .attach.compact .attach-thumb img {
+  height: 108px;
+  max-width: 220px;
+}
+.sv-root .dfile {
+  display: inline-block;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+}
+.sv-root .dfile:hover {
+  background: var(--panel);
+}
+
+/* ---- lightbox (zoomed attachment image) ---- */
+.sv-root .lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+.sv-root .lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.82);
+  cursor: zoom-out;
+}
+.sv-root .lightbox-img {
+  position: relative;
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: 8px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+.sv-root .lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.sv-root .lightbox-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* ---- post action row (like / pin) — real state, inert until step 5 ---- */
+.sv-root .dactions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.sv-root .act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 13px;
+}
+.sv-root .act.pin:not(.on) {
+  filter: grayscale(1);
+}
+.sv-root .act.pin.on {
+  color: var(--accent-2);
+  border-color: var(--accent-2);
+}
+/* Liked state for the post like button (live in step 5). */
+.sv-root .act.like.on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.sv-root .act:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+/* Inline write error (like/comment/reply failure) — brief, muted-danger text. */
+.sv-root .acterr {
+  font-size: 12px;
+  color: var(--danger, #e5534b);
+  align-self: center;
+}
+.sv-root .ic-thumb {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+/* ---- comments section (shell only — list + fetch is step 4b) ---- */
+.sv-root .comments {
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.sv-root .chead-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sv-root .chead-row h3 {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.sv-root .seg {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sv-root .seg button {
+  background: var(--panel);
+  color: var(--muted);
+  border: 0;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.sv-root .seg button:not(.on):hover {
+  background: color-mix(in oklab, var(--panel-2), transparent 45%);
+  color: var(--text);
+}
+.sv-root .seg button.on {
+  background: var(--panel-2);
+  color: var(--text);
+}
+.sv-root .composer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.sv-root .composer textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 56px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.sv-root .composer textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.sv-root .composer textarea:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent), transparent 70%);
+}
+.sv-root .composer .btn {
+  align-self: stretch;
+}
+.sv-root .cempty {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 4px 0 2px;
+}
+.sv-root .cmore {
+  display: block;
+  width: 100%;
+  margin: 10px 0 4px;
+}
+
+/* ---- comment list (step 4b) ---- */
+.sv-root .comment {
+  display: flex;
+  gap: 10px;
+  margin: 0 -12px;
+  padding: 12px;
+  border-top: 1px solid var(--rowdiv);
+  border-radius: 10px;
+  transition: background 0.12s ease;
+}
+.sv-root .comment:hover {
+  background: var(--panel);
+}
+.sv-root .comment.reply {
+  margin-left: 24px;
+  border-top: 1px dashed var(--rowdiv);
+}
+/* Brief highlight when a notification jumps to this comment. */
+.sv-root .comment.cflash {
+  animation: sv-cflash 2s ease;
+}
+@keyframes sv-cflash {
+  0%,
+  30% {
+    background: color-mix(in oklab, var(--accent), transparent 72%);
+  }
+  100% {
+    background: transparent;
+  }
+}
+.sv-root .replies {
+  display: block;
+}
+.sv-root .cbody {
+  min-width: 0;
+  flex: 1;
+}
+.sv-root .crow {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.sv-root .ctime {
+  color: var(--muted);
+  font-size: 12px;
+}
+.sv-root .ctext {
+  margin: 3px 0 4px;
+  color: var(--bodytext);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.sv-root .ctext a {
+  color: var(--accent);
+}
+.sv-root .cactions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* Comment like — a LIVE button (a comment IS a post, so it votes like one). */
+.sv-root .cactions .clike {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.sv-root .cactions .clike:hover:not(:disabled) {
+  color: var(--text);
+}
+.sv-root .cactions .clike.on {
+  color: var(--accent);
+}
+.sv-root .cactions .clike:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.sv-root .replybtn {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+.sv-root .replybtn:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+.sv-root .replybox {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.sv-root .replybox textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 40px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 14px;
+}
+.sv-root .replybox textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.sv-root .replybox .btn.sm {
+  margin-top: 0;
+  align-self: center;
+}
+
+/* ---- screen-reader-only label (composer) ---- */
+.sv-root .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- buttons ---- */
+.sv-root .btn {
+  background: var(--accent);
+  color: var(--btn-fg);
+  border: 0;
+  border-radius: 10px;
+  padding: 0 16px;
+  font-weight: 700;
+  transition: background 0.12s ease;
+}
+.sv-root .btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.sv-root .btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sv-root .btn.sm {
+  padding: 6px 12px;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* ---- mentions (step 5c): rendered @mention + composer autocomplete ---- */
+.sv-root .sv-mention {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sv-root a.sv-mention:hover {
+  text-decoration: underline;
+}
+
+/* MentionBox wraps the composer textarea so the dropdown can anchor to it. */
+.sv-root .mb {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.sv-root .mb textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.sv-root .mb-list {
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  padding: 4px;
+  max-height: 240px;
+  overflow-y: auto;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+.sv-root .mb-empty {
+  padding: 8px 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.sv-root .mb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+}
+.sv-root .mb-item:hover,
+.sv-root .mb-item.active {
+  background: color-mix(in oklab, var(--accent), transparent 82%);
+}
+.sv-root .mb-name {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sv-root .mb-handle {
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ---- narrow fallback ---- */
+@media (max-width: 860px) {
+  .sv-root .layout {
+    flex-direction: column;
+  }
+  .sv-root .listpane {
+    width: auto;
+    max-height: 42vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .sv-root .detail {
+    padding: 20px;
+  }
+}
+@media (max-width: 640px) {
+  .sv-root .topbar {
+    gap: 12px;
+    padding: 0 12px 0 16px;
+  }
+  .sv-root .tabs button {
+    padding: 8px 10px;
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "skool-view",
+  "version": "0.3.1",
+  "description": "A faster custom view over Skool communities. Off by default; toggle with the toolbar button or Alt+S.",
+  "permissions": ["storage", "cookies"],
+  "host_permissions": ["*://*.skool.com/*"],
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
+  },
+  "background": {
+    "scripts": ["src/background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.skool.com/*"],
+      "js": ["src/content/index.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Toggle skool-view",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
+  },
+  "commands": {
+    "toggle": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Toggle the skool-view overlay on the active tab"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "skool-view@local",
+      "update_url": "https://raw.githubusercontent.com/rocleemusic/skool-view-dist/main/updates.json"
+    }
+  }
+}

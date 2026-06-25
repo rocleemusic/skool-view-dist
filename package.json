@@ -1,0 +1,29 @@
+{
+  "name": "skool-view",
+  "version": "0.3.1",
+  "description": "A custom, local-first browser-extension client for Skool communities (Firefox first).",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./jsconfig.json",
+    "icons": "node scripts/make-icons.mjs",
+    "package": "npm run build && web-ext build -s dist -a web-ext-artifacts --overwrite-dest",
+    "sign": "npm run build && web-ext sign -s dist -a web-ext-artifacts --channel=unlisted"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.12.0"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@types/webextension-polyfill": "^0.12.5",
+    "opentype.js": "^1.3.4",
+    "svelte": "^5.0.0",
+    "svelte-check": "^4.0.0",
+    "vite": "^5.4.0",
+    "vite-plugin-web-extension": "^4.4.0",
+    "web-ext": "^8.3.0"
+  }
+}

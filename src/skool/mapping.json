@@ -1,0 +1,69 @@
+{
+  "_comment": "Declarative field paths for Skool raw->view-model mapping. Drift = edit this file, not map.js. Paths are dot-notation read from the raw object by getPath(). Shapes confirmed live against your-community 2026-06 (see the reverse-engineering notes). 'author'/'replies' blocks describe nested objects mapped recursively by map.js.",
+  "post": {
+    "id": "id",
+    "slug": "name",
+    "title": "metadata.title",
+    "content": "metadata.content",
+    "upvotes": "metadata.upvotes",
+    "comments": "metadata.comments",
+    "pinned": "metadata.pinned",
+    "created": "createdAt",
+    "labelId": "labelId",
+    "author": {
+      "_root": "user",
+      "id": "id",
+      "handle": "name",
+      "firstName": "firstName",
+      "lastName": "lastName",
+      "avatar": "metadata.pictureBubble"
+    }
+  },
+  "comment": {
+    "id": ["id"],
+    "content": ["metadata.content", "content"],
+    "upvotes": ["metadata.upvotes", "upvotes"],
+    "ts": ["created_at", "createdAt"],
+    "author": {
+      "_root": ["user", "author"],
+      "id": ["id", "user_id"],
+      "handle": ["name"],
+      "firstName": ["first_name", "firstName", "name"],
+      "lastName": ["last_name", "lastName"],
+      "avatar": ["metadata.picture_bubble", "metadata.pictureBubble", "picture_bubble", "pictureBubble", "avatar"]
+    },
+    "replies": ["children", "replies", "comments"]
+  },
+  "mention": {
+    "id": "id",
+    "handle": "name",
+    "firstName": "first_name",
+    "lastName": "last_name",
+    "avatar": "metadata.picture_bubble"
+  },
+  "notification": {
+    "id": "id",
+    "unread": "unread",
+    "ts": ["created_at", "createdAt"],
+    "dataString": "metadata.data",
+    "action": "action",
+    "data": {
+      "action": "action",
+      "actorName": "display_name",
+      "actorAvatar": "image_url",
+      "text": "text",
+      "preview": "content",
+      "linkAs": "link_as",
+      "postId": "post_id",
+      "rootPostId": "root_post_id"
+    }
+  },
+  "member": {
+    "firstName": "firstName",
+    "lastName": "lastName",
+    "bio": "metadata.bio",
+    "avatar": "metadata.pictureBubble",
+    "online": "metadata.online",
+    "role": "member.role"
+  }
+}

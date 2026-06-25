@@ -1,0 +1,8 @@
+# Node / extension build
+node_modules/
+dist/
+web-ext-artifacts/
+.vite/
+
+# Downloaded font cache for scripts/make-icons.mjs (Poppins TTF, fetched on demand)
+scripts/.cache/
